@@ -8,7 +8,7 @@ var createTaskHandler = function(event) {
     listItemEl.className = "task-item";
     listItemEl.textContent = "This is a new task.";
     taskToDoEl.apeendChild("listItemEl")
-}
+};
 
 formEl.addEventListener("click", createTaskHandler); {
     var listItemEl = document.createElement("li");
