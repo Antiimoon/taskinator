@@ -4,13 +4,21 @@ var formEl = document.querySelector("#task-form");
 var taskToDoEl = document.querySelector("#task-to-do");
 var pageContentEl = document.querySelector("#page-content");
 var taskIdCounter = 0;
+var tasks = [];
 
 var taskButtonHandler = function(event) {
-    // get target element from event
-    var targetEl = event.target;
+  // get target element from event
+  var targetEl = event.target;
 
-    var isEdit = formEl.hasAttribute("data-task-id");
+  var isEdit = formEl.hasAttribute("data-task-id");
     console.log(isEdit);
+
+    for (var i = 0; i < tasks.length; i++) {
+      if (tasks[i].id === parseInt(taskId)) {
+        tasks[i].name = taskName;
+        tasks[i].type = taskType;
+      }
+    };
 
     // has data attribute, so get task id and call function to complete edit process
     if (isEdit) {
@@ -20,12 +28,13 @@ var taskButtonHandler = function(event) {
     // no data attribute, so create object as normal and pass to createTaskEl function
     else {
         var taskDataObj = {
-        name: taskNameInput,
-        type: taskTypeInput
-    };
-  
-    createTaskEl(taskDataObj);
-  }
+            name: taskNameInput,
+            type: taskNameInput,
+            status: "to do"
+        };
+      
+        createTaskEl(taskDataObj);
+    }
   
     // edit button was clicked
     if (targetEl.matches(".edit-btn")) {
@@ -37,7 +46,7 @@ var taskButtonHandler = function(event) {
       var taskId = targetEl.getAttribute("data-task-id");
       deleteTask(taskId);
     }
-  };
+  };  
 
   var editTask = function(taskId) {
     // get task list item element
@@ -62,18 +71,7 @@ var taskButtonHandler = function(event) {
 
   };
 
-
-var deleteTask = function(taskId) {
-    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId+ "']");
-    taskSelected.remove();
-
-    if (event.target.matches(".delete-btn")) {
-        var taskId = event.target.getAttribute("data-task-id");
-        deleteTask(taskId);
-    }
-}
-
-var createTaskEl = function(taskDataObj) {
+  var createTaskEl = function(taskDataObj) {
     // create list item
     var listItemEl = document.createElement("li");
     listItemEl.className = "task-item";
@@ -127,9 +125,9 @@ var createTaskEl = function(taskDataObj) {
       };
 
     return actionContainerEl;    
-};
+  };
 
-var taskStatusChangeHandler = function(event) {
+  var taskStatusChangeHandler = function(event) {
     // get the task item's id
     var taskId = event.target.getAttribute("data-task-id");
   
@@ -148,8 +146,30 @@ var taskStatusChangeHandler = function(event) {
       else if (statusValue === "completed") {
         tasksCompletedEl.appendChild(taskSelected);
       }
-};
-  
+
+      for (var i = 0; i < tasks.length; i++) {
+        if (tasks[i].id === parseInt(taskId)) {
+          tasks[i].status = statusValue;
+        }
+      }
+  };
+  var deleteTask = function(taskId) {
+    var taskSelected = document.querySelector(".task-item[data-task-id='" + taskId+ "']");
+    taskSelected.remove();
+    
+    var updatedTaskArr = [];
+
+    // loop through current tasks
+    for (var i = 0; i < tasks.length; i++) {
+      // if tasks[i].id doesn't match the value of taskId, let's keep that task and push it into the new array
+      if (tasks[i].id !== parseInt(taskId)) {
+        updatedTaskArr.push(tasks[i]);
+      }
+    }
+
+    // reassign tasks array to be the same as updatedTaskArr
+    tasks = updatedTaskArr;
+  }
 
     // add task id as a custom attribute
     listItemEl.setAttribute("data-task-id", taskIdCounter);
